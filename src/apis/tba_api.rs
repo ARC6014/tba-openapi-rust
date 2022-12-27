@@ -25,7 +25,7 @@ pub enum GetStatusError {
 
 
 /// Returns API status, and TBA status information.
-pub async fn get_status(configuration: &configuration::Configuration, if_none_match: Option<&str>) -> Result<crate::models::ApiStatus, Error<GetStatusError>> {
+pub async fn get_status(configuration: &configuration::Configuration, if_none_match: Option<&str>) -> Result<(crate::models::ApiStatus, Option<String>), Error<GetStatusError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -50,12 +50,19 @@ pub async fn get_status(configuration: &configuration::Configuration, if_none_ma
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetStatusError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };

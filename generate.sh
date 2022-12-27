@@ -1,1 +1,1 @@
-openapi-generator generate -g rust -i api_v3.json --package-name tba-openapi-rust
+openapi-generator generate -g rust -i api_v3.json --package-name tba-openapi-rust -p supportMultipleResponses

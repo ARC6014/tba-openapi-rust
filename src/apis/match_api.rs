@@ -129,7 +129,7 @@ pub enum GetTeamMatchesByYearSimpleError {
 
 
 /// Gets an array of Match Keys for the given event key that have timeseries data. Returns an empty array if no matches have timeseries data. *WARNING:* This is *not* official data, and is subject to a significant possibility of error, or missing data. Do not rely on this data for any purpose. In fact, pretend we made it up. *WARNING:* This endpoint and corresponding data models are under *active development* and may change at any time, including in breaking ways.
-pub async fn get_event_match_timeseries(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<Vec<String>, Error<GetEventMatchTimeseriesError>> {
+pub async fn get_event_match_timeseries(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetEventMatchTimeseriesError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -154,12 +154,19 @@ pub async fn get_event_match_timeseries(configuration: &configuration::Configura
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetEventMatchTimeseriesError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -168,7 +175,7 @@ pub async fn get_event_match_timeseries(configuration: &configuration::Configura
 }
 
 /// Gets a list of matches for the given event.
-pub async fn get_event_matches(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<Vec<crate::models::Match>, Error<GetEventMatchesError>> {
+pub async fn get_event_matches(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Match>, Option<String>), Error<GetEventMatchesError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -193,12 +200,19 @@ pub async fn get_event_matches(configuration: &configuration::Configuration, eve
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetEventMatchesError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -207,7 +221,7 @@ pub async fn get_event_matches(configuration: &configuration::Configuration, eve
 }
 
 /// Gets a list of match keys for the given event.
-pub async fn get_event_matches_keys(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<Vec<String>, Error<GetEventMatchesKeysError>> {
+pub async fn get_event_matches_keys(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetEventMatchesKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -232,12 +246,19 @@ pub async fn get_event_matches_keys(configuration: &configuration::Configuration
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetEventMatchesKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -246,7 +267,7 @@ pub async fn get_event_matches_keys(configuration: &configuration::Configuration
 }
 
 /// Gets a short-form list of matches for the given event.
-pub async fn get_event_matches_simple(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<Vec<crate::models::MatchSimple>, Error<GetEventMatchesSimpleError>> {
+pub async fn get_event_matches_simple(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::MatchSimple>, Option<String>), Error<GetEventMatchesSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -271,12 +292,19 @@ pub async fn get_event_matches_simple(configuration: &configuration::Configurati
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetEventMatchesSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -285,7 +313,7 @@ pub async fn get_event_matches_simple(configuration: &configuration::Configurati
 }
 
 /// Gets a `Match` object for the given match key.
-pub async fn get_match(configuration: &configuration::Configuration, match_key: &str, if_none_match: Option<&str>) -> Result<crate::models::Match, Error<GetMatchError>> {
+pub async fn get_match(configuration: &configuration::Configuration, match_key: &str, if_none_match: Option<&str>) -> Result<(crate::models::Match, Option<String>), Error<GetMatchError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -310,12 +338,19 @@ pub async fn get_match(configuration: &configuration::Configuration, match_key: 
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetMatchError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -324,7 +359,7 @@ pub async fn get_match(configuration: &configuration::Configuration, match_key: 
 }
 
 /// Gets a short-form `Match` object for the given match key.
-pub async fn get_match_simple(configuration: &configuration::Configuration, match_key: &str, if_none_match: Option<&str>) -> Result<crate::models::MatchSimple, Error<GetMatchSimpleError>> {
+pub async fn get_match_simple(configuration: &configuration::Configuration, match_key: &str, if_none_match: Option<&str>) -> Result<(crate::models::MatchSimple, Option<String>), Error<GetMatchSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -349,12 +384,19 @@ pub async fn get_match_simple(configuration: &configuration::Configuration, matc
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetMatchSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -363,7 +405,7 @@ pub async fn get_match_simple(configuration: &configuration::Configuration, matc
 }
 
 /// Gets an array of game-specific Match Timeseries objects for the given match key or an empty array if not available. *WARNING:* This is *not* official data, and is subject to a significant possibility of error, or missing data. Do not rely on this data for any purpose. In fact, pretend we made it up. *WARNING:* This endpoint and corresponding data models are under *active development* and may change at any time, including in breaking ways.
-pub async fn get_match_timeseries(configuration: &configuration::Configuration, match_key: &str, if_none_match: Option<&str>) -> Result<Vec<serde_json::Value>, Error<GetMatchTimeseriesError>> {
+pub async fn get_match_timeseries(configuration: &configuration::Configuration, match_key: &str, if_none_match: Option<&str>) -> Result<(Vec<serde_json::Value>, Option<String>), Error<GetMatchTimeseriesError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -388,12 +430,19 @@ pub async fn get_match_timeseries(configuration: &configuration::Configuration, 
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetMatchTimeseriesError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -402,7 +451,7 @@ pub async fn get_match_timeseries(configuration: &configuration::Configuration, 
 }
 
 /// Gets Zebra MotionWorks data for a Match for the given match key.
-pub async fn get_match_zebra(configuration: &configuration::Configuration, match_key: &str, if_none_match: Option<&str>) -> Result<crate::models::Zebra, Error<GetMatchZebraError>> {
+pub async fn get_match_zebra(configuration: &configuration::Configuration, match_key: &str, if_none_match: Option<&str>) -> Result<(crate::models::Zebra, Option<String>), Error<GetMatchZebraError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -427,12 +476,19 @@ pub async fn get_match_zebra(configuration: &configuration::Configuration, match
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetMatchZebraError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -441,7 +497,7 @@ pub async fn get_match_zebra(configuration: &configuration::Configuration, match
 }
 
 /// Gets a list of matches for the given team and event.
-pub async fn get_team_event_matches(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<Vec<crate::models::Match>, Error<GetTeamEventMatchesError>> {
+pub async fn get_team_event_matches(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Match>, Option<String>), Error<GetTeamEventMatchesError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -466,12 +522,19 @@ pub async fn get_team_event_matches(configuration: &configuration::Configuration
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetTeamEventMatchesError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -480,7 +543,7 @@ pub async fn get_team_event_matches(configuration: &configuration::Configuration
 }
 
 /// Gets a list of match keys for matches for the given team and event.
-pub async fn get_team_event_matches_keys(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<Vec<String>, Error<GetTeamEventMatchesKeysError>> {
+pub async fn get_team_event_matches_keys(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetTeamEventMatchesKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -505,12 +568,19 @@ pub async fn get_team_event_matches_keys(configuration: &configuration::Configur
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetTeamEventMatchesKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -519,7 +589,7 @@ pub async fn get_team_event_matches_keys(configuration: &configuration::Configur
 }
 
 /// Gets a short-form list of matches for the given team and event.
-pub async fn get_team_event_matches_simple(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<Vec<crate::models::Match>, Error<GetTeamEventMatchesSimpleError>> {
+pub async fn get_team_event_matches_simple(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Match>, Option<String>), Error<GetTeamEventMatchesSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -544,12 +614,19 @@ pub async fn get_team_event_matches_simple(configuration: &configuration::Config
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetTeamEventMatchesSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -558,7 +635,7 @@ pub async fn get_team_event_matches_simple(configuration: &configuration::Config
 }
 
 /// Gets a list of matches for the given team and year.
-pub async fn get_team_matches_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Vec<crate::models::Match>, Error<GetTeamMatchesByYearError>> {
+pub async fn get_team_matches_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Match>, Option<String>), Error<GetTeamMatchesByYearError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -583,12 +660,19 @@ pub async fn get_team_matches_by_year(configuration: &configuration::Configurati
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetTeamMatchesByYearError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -597,7 +681,7 @@ pub async fn get_team_matches_by_year(configuration: &configuration::Configurati
 }
 
 /// Gets a list of match keys for matches for the given team and year.
-pub async fn get_team_matches_by_year_keys(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Vec<String>, Error<GetTeamMatchesByYearKeysError>> {
+pub async fn get_team_matches_by_year_keys(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetTeamMatchesByYearKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -622,12 +706,19 @@ pub async fn get_team_matches_by_year_keys(configuration: &configuration::Config
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetTeamMatchesByYearKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -636,7 +727,7 @@ pub async fn get_team_matches_by_year_keys(configuration: &configuration::Config
 }
 
 /// Gets a short-form list of matches for the given team and year.
-pub async fn get_team_matches_by_year_simple(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Vec<crate::models::MatchSimple>, Error<GetTeamMatchesByYearSimpleError>> {
+pub async fn get_team_matches_by_year_simple(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::MatchSimple>, Option<String>), Error<GetTeamMatchesByYearSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -661,12 +752,19 @@ pub async fn get_team_matches_by_year_simple(configuration: &configuration::Conf
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
+    
+    let etag = local_var_resp.headers().get(reqwest::header::ETAG).map(|h| h.to_str());
+    let etag = match etag {
+        Some(e) if e.is_ok() => Some(e.unwrap().to_owned()),
+        _ => None,
+    };
 
     let local_var_status = local_var_resp.status();
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
+        Ok((local_var_entity, etag))
     } else {
         let local_var_entity: Option<GetTeamMatchesByYearSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
