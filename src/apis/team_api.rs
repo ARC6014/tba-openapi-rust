@@ -337,7 +337,7 @@ pub enum GetTeamsSimpleError {
 
 
 /// Gets a list of team district rankings for the given district.
-pub async fn get_district_rankings(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::DistrictRanking>, Option<String>), Error<GetDistrictRankingsError>> {
+pub async fn get_district_rankings(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::DistrictRanking>, Option<String>)>, Error<GetDistrictRankingsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -373,8 +373,11 @@ pub async fn get_district_rankings(configuration: &configuration::Configuration,
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictRankingsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -383,7 +386,7 @@ pub async fn get_district_rankings(configuration: &configuration::Configuration,
 }
 
 /// Gets a list of `Team` objects that competed in events in the given district.
-pub async fn get_district_teams(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Team>, Option<String>), Error<GetDistrictTeamsError>> {
+pub async fn get_district_teams(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Team>, Option<String>)>, Error<GetDistrictTeamsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -419,8 +422,11 @@ pub async fn get_district_teams(configuration: &configuration::Configuration, di
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictTeamsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -429,7 +435,7 @@ pub async fn get_district_teams(configuration: &configuration::Configuration, di
 }
 
 /// Gets a list of `Team` objects that competed in events in the given district.
-pub async fn get_district_teams_keys(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetDistrictTeamsKeysError>> {
+pub async fn get_district_teams_keys(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<String>, Option<String>)>, Error<GetDistrictTeamsKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -465,8 +471,11 @@ pub async fn get_district_teams_keys(configuration: &configuration::Configuratio
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictTeamsKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -475,7 +484,7 @@ pub async fn get_district_teams_keys(configuration: &configuration::Configuratio
 }
 
 /// Gets a short-form list of `Team` objects that competed in events in the given district.
-pub async fn get_district_teams_simple(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::TeamSimple>, Option<String>), Error<GetDistrictTeamsSimpleError>> {
+pub async fn get_district_teams_simple(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::TeamSimple>, Option<String>)>, Error<GetDistrictTeamsSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -511,8 +520,11 @@ pub async fn get_district_teams_simple(configuration: &configuration::Configurat
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictTeamsSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -521,7 +533,7 @@ pub async fn get_district_teams_simple(configuration: &configuration::Configurat
 }
 
 /// Gets a list of `Team` objects that competed in the given event.
-pub async fn get_event_teams(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Team>, Option<String>), Error<GetEventTeamsError>> {
+pub async fn get_event_teams(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Team>, Option<String>)>, Error<GetEventTeamsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -557,8 +569,11 @@ pub async fn get_event_teams(configuration: &configuration::Configuration, event
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetEventTeamsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -567,7 +582,7 @@ pub async fn get_event_teams(configuration: &configuration::Configuration, event
 }
 
 /// Gets a list of `Team` keys that competed in the given event.
-pub async fn get_event_teams_keys(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetEventTeamsKeysError>> {
+pub async fn get_event_teams_keys(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<String>, Option<String>)>, Error<GetEventTeamsKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -603,8 +618,11 @@ pub async fn get_event_teams_keys(configuration: &configuration::Configuration, 
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetEventTeamsKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -613,7 +631,7 @@ pub async fn get_event_teams_keys(configuration: &configuration::Configuration, 
 }
 
 /// Gets a short-form list of `Team` objects that competed in the given event.
-pub async fn get_event_teams_simple(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::TeamSimple>, Option<String>), Error<GetEventTeamsSimpleError>> {
+pub async fn get_event_teams_simple(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::TeamSimple>, Option<String>)>, Error<GetEventTeamsSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -649,8 +667,11 @@ pub async fn get_event_teams_simple(configuration: &configuration::Configuration
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetEventTeamsSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -659,7 +680,7 @@ pub async fn get_event_teams_simple(configuration: &configuration::Configuration
 }
 
 /// Gets a key-value list of the event statuses for teams competing at the given event.
-pub async fn get_event_teams_statuses(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<(::std::collections::HashMap<String, crate::models::TeamEventStatus>, Option<String>), Error<GetEventTeamsStatusesError>> {
+pub async fn get_event_teams_statuses(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<Option<(::std::collections::HashMap<String, crate::models::TeamEventStatus>, Option<String>)>, Error<GetEventTeamsStatusesError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -695,8 +716,11 @@ pub async fn get_event_teams_statuses(configuration: &configuration::Configurati
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetEventTeamsStatusesError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -705,7 +729,7 @@ pub async fn get_event_teams_statuses(configuration: &configuration::Configurati
 }
 
 /// Gets a `Team` object for the team referenced by the given key.
-pub async fn get_team(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<(crate::models::Team, Option<String>), Error<GetTeamError>> {
+pub async fn get_team(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<Option<(crate::models::Team, Option<String>)>, Error<GetTeamError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -741,8 +765,11 @@ pub async fn get_team(configuration: &configuration::Configuration, team_key: &s
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -751,7 +778,7 @@ pub async fn get_team(configuration: &configuration::Configuration, team_key: &s
 }
 
 /// Gets a list of awards the given team has won.
-pub async fn get_team_awards(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Award>, Option<String>), Error<GetTeamAwardsError>> {
+pub async fn get_team_awards(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Award>, Option<String>)>, Error<GetTeamAwardsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -787,8 +814,11 @@ pub async fn get_team_awards(configuration: &configuration::Configuration, team_
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamAwardsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -797,7 +827,7 @@ pub async fn get_team_awards(configuration: &configuration::Configuration, team_
 }
 
 /// Gets a list of awards the given team has won in a given year.
-pub async fn get_team_awards_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Award>, Option<String>), Error<GetTeamAwardsByYearError>> {
+pub async fn get_team_awards_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Award>, Option<String>)>, Error<GetTeamAwardsByYearError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -833,8 +863,11 @@ pub async fn get_team_awards_by_year(configuration: &configuration::Configuratio
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamAwardsByYearError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -843,7 +876,7 @@ pub async fn get_team_awards_by_year(configuration: &configuration::Configuratio
 }
 
 /// Gets an array of districts representing each year the team was in a district. Will return an empty array if the team was never in a district.
-pub async fn get_team_districts(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::DistrictList>, Option<String>), Error<GetTeamDistrictsError>> {
+pub async fn get_team_districts(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::DistrictList>, Option<String>)>, Error<GetTeamDistrictsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -879,8 +912,11 @@ pub async fn get_team_districts(configuration: &configuration::Configuration, te
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamDistrictsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -889,7 +925,7 @@ pub async fn get_team_districts(configuration: &configuration::Configuration, te
 }
 
 /// Gets a list of awards the given team won at the given event.
-pub async fn get_team_event_awards(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Award>, Option<String>), Error<GetTeamEventAwardsError>> {
+pub async fn get_team_event_awards(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Award>, Option<String>)>, Error<GetTeamEventAwardsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -925,8 +961,11 @@ pub async fn get_team_event_awards(configuration: &configuration::Configuration,
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventAwardsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -935,7 +974,7 @@ pub async fn get_team_event_awards(configuration: &configuration::Configuration,
 }
 
 /// Gets a list of matches for the given team and event.
-pub async fn get_team_event_matches(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Match>, Option<String>), Error<GetTeamEventMatchesError>> {
+pub async fn get_team_event_matches(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Match>, Option<String>)>, Error<GetTeamEventMatchesError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -971,8 +1010,11 @@ pub async fn get_team_event_matches(configuration: &configuration::Configuration
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventMatchesError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -981,7 +1023,7 @@ pub async fn get_team_event_matches(configuration: &configuration::Configuration
 }
 
 /// Gets a list of match keys for matches for the given team and event.
-pub async fn get_team_event_matches_keys(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetTeamEventMatchesKeysError>> {
+pub async fn get_team_event_matches_keys(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<String>, Option<String>)>, Error<GetTeamEventMatchesKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1017,8 +1059,11 @@ pub async fn get_team_event_matches_keys(configuration: &configuration::Configur
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventMatchesKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1027,7 +1072,7 @@ pub async fn get_team_event_matches_keys(configuration: &configuration::Configur
 }
 
 /// Gets a short-form list of matches for the given team and event.
-pub async fn get_team_event_matches_simple(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Match>, Option<String>), Error<GetTeamEventMatchesSimpleError>> {
+pub async fn get_team_event_matches_simple(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Match>, Option<String>)>, Error<GetTeamEventMatchesSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1063,8 +1108,11 @@ pub async fn get_team_event_matches_simple(configuration: &configuration::Config
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventMatchesSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1073,7 +1121,7 @@ pub async fn get_team_event_matches_simple(configuration: &configuration::Config
 }
 
 /// Gets the competition rank and status of the team at the given event.
-pub async fn get_team_event_status(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<(crate::models::TeamEventStatus, Option<String>), Error<GetTeamEventStatusError>> {
+pub async fn get_team_event_status(configuration: &configuration::Configuration, team_key: &str, event_key: &str, if_none_match: Option<&str>) -> Result<Option<(crate::models::TeamEventStatus, Option<String>)>, Error<GetTeamEventStatusError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1109,8 +1157,11 @@ pub async fn get_team_event_status(configuration: &configuration::Configuration,
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventStatusError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1119,7 +1170,7 @@ pub async fn get_team_event_status(configuration: &configuration::Configuration,
 }
 
 /// Gets a list of all events this team has competed at.
-pub async fn get_team_events(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Event>, Option<String>), Error<GetTeamEventsError>> {
+pub async fn get_team_events(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Event>, Option<String>)>, Error<GetTeamEventsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1155,8 +1206,11 @@ pub async fn get_team_events(configuration: &configuration::Configuration, team_
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1165,7 +1219,7 @@ pub async fn get_team_events(configuration: &configuration::Configuration, team_
 }
 
 /// Gets a list of events this team has competed at in the given year.
-pub async fn get_team_events_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Event>, Option<String>), Error<GetTeamEventsByYearError>> {
+pub async fn get_team_events_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Event>, Option<String>)>, Error<GetTeamEventsByYearError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1201,8 +1255,11 @@ pub async fn get_team_events_by_year(configuration: &configuration::Configuratio
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventsByYearError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1211,7 +1268,7 @@ pub async fn get_team_events_by_year(configuration: &configuration::Configuratio
 }
 
 /// Gets a list of the event keys for events this team has competed at in the given year.
-pub async fn get_team_events_by_year_keys(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetTeamEventsByYearKeysError>> {
+pub async fn get_team_events_by_year_keys(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<String>, Option<String>)>, Error<GetTeamEventsByYearKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1247,8 +1304,11 @@ pub async fn get_team_events_by_year_keys(configuration: &configuration::Configu
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventsByYearKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1257,7 +1317,7 @@ pub async fn get_team_events_by_year_keys(configuration: &configuration::Configu
 }
 
 /// Gets a short-form list of events this team has competed at in the given year.
-pub async fn get_team_events_by_year_simple(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::EventSimple>, Option<String>), Error<GetTeamEventsByYearSimpleError>> {
+pub async fn get_team_events_by_year_simple(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::EventSimple>, Option<String>)>, Error<GetTeamEventsByYearSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1293,8 +1353,11 @@ pub async fn get_team_events_by_year_simple(configuration: &configuration::Confi
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventsByYearSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1303,7 +1366,7 @@ pub async fn get_team_events_by_year_simple(configuration: &configuration::Confi
 }
 
 /// Gets a list of the event keys for all events this team has competed at.
-pub async fn get_team_events_keys(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetTeamEventsKeysError>> {
+pub async fn get_team_events_keys(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<String>, Option<String>)>, Error<GetTeamEventsKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1339,8 +1402,11 @@ pub async fn get_team_events_keys(configuration: &configuration::Configuration, 
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventsKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1349,7 +1415,7 @@ pub async fn get_team_events_keys(configuration: &configuration::Configuration, 
 }
 
 /// Gets a short-form list of all events this team has competed at.
-pub async fn get_team_events_simple(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::EventSimple>, Option<String>), Error<GetTeamEventsSimpleError>> {
+pub async fn get_team_events_simple(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::EventSimple>, Option<String>)>, Error<GetTeamEventsSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1385,8 +1451,11 @@ pub async fn get_team_events_simple(configuration: &configuration::Configuration
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventsSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1395,7 +1464,7 @@ pub async fn get_team_events_simple(configuration: &configuration::Configuration
 }
 
 /// Gets a key-value list of the event statuses for events this team has competed at in the given year.
-pub async fn get_team_events_statuses_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(::std::collections::HashMap<String, crate::models::TeamEventStatus>, Option<String>), Error<GetTeamEventsStatusesByYearError>> {
+pub async fn get_team_events_statuses_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Option<(::std::collections::HashMap<String, crate::models::TeamEventStatus>, Option<String>)>, Error<GetTeamEventsStatusesByYearError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1431,8 +1500,11 @@ pub async fn get_team_events_statuses_by_year(configuration: &configuration::Con
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamEventsStatusesByYearError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1441,7 +1513,7 @@ pub async fn get_team_events_statuses_by_year(configuration: &configuration::Con
 }
 
 /// Gets a list of matches for the given team and year.
-pub async fn get_team_matches_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Match>, Option<String>), Error<GetTeamMatchesByYearError>> {
+pub async fn get_team_matches_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Match>, Option<String>)>, Error<GetTeamMatchesByYearError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1477,8 +1549,11 @@ pub async fn get_team_matches_by_year(configuration: &configuration::Configurati
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamMatchesByYearError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1487,7 +1562,7 @@ pub async fn get_team_matches_by_year(configuration: &configuration::Configurati
 }
 
 /// Gets a list of match keys for matches for the given team and year.
-pub async fn get_team_matches_by_year_keys(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetTeamMatchesByYearKeysError>> {
+pub async fn get_team_matches_by_year_keys(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<String>, Option<String>)>, Error<GetTeamMatchesByYearKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1523,8 +1598,11 @@ pub async fn get_team_matches_by_year_keys(configuration: &configuration::Config
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamMatchesByYearKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1533,7 +1611,7 @@ pub async fn get_team_matches_by_year_keys(configuration: &configuration::Config
 }
 
 /// Gets a short-form list of matches for the given team and year.
-pub async fn get_team_matches_by_year_simple(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::MatchSimple>, Option<String>), Error<GetTeamMatchesByYearSimpleError>> {
+pub async fn get_team_matches_by_year_simple(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::MatchSimple>, Option<String>)>, Error<GetTeamMatchesByYearSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1569,8 +1647,11 @@ pub async fn get_team_matches_by_year_simple(configuration: &configuration::Conf
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamMatchesByYearSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1579,7 +1660,7 @@ pub async fn get_team_matches_by_year_simple(configuration: &configuration::Conf
 }
 
 /// Gets a list of Media (videos / pictures) for the given team and tag.
-pub async fn get_team_media_by_tag(configuration: &configuration::Configuration, team_key: &str, media_tag: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Media>, Option<String>), Error<GetTeamMediaByTagError>> {
+pub async fn get_team_media_by_tag(configuration: &configuration::Configuration, team_key: &str, media_tag: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Media>, Option<String>)>, Error<GetTeamMediaByTagError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1615,8 +1696,11 @@ pub async fn get_team_media_by_tag(configuration: &configuration::Configuration,
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamMediaByTagError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1625,7 +1709,7 @@ pub async fn get_team_media_by_tag(configuration: &configuration::Configuration,
 }
 
 /// Gets a list of Media (videos / pictures) for the given team, tag and year.
-pub async fn get_team_media_by_tag_year(configuration: &configuration::Configuration, team_key: &str, media_tag: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Media>, Option<String>), Error<GetTeamMediaByTagYearError>> {
+pub async fn get_team_media_by_tag_year(configuration: &configuration::Configuration, team_key: &str, media_tag: &str, year: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Media>, Option<String>)>, Error<GetTeamMediaByTagYearError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1661,8 +1745,11 @@ pub async fn get_team_media_by_tag_year(configuration: &configuration::Configura
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamMediaByTagYearError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1671,7 +1758,7 @@ pub async fn get_team_media_by_tag_year(configuration: &configuration::Configura
 }
 
 /// Gets a list of Media (videos / pictures) for the given team and year.
-pub async fn get_team_media_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Media>, Option<String>), Error<GetTeamMediaByYearError>> {
+pub async fn get_team_media_by_year(configuration: &configuration::Configuration, team_key: &str, year: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Media>, Option<String>)>, Error<GetTeamMediaByYearError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1707,8 +1794,11 @@ pub async fn get_team_media_by_year(configuration: &configuration::Configuration
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamMediaByYearError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1717,7 +1807,7 @@ pub async fn get_team_media_by_year(configuration: &configuration::Configuration
 }
 
 /// Gets a list of year and robot name pairs for each year that a robot name was provided. Will return an empty array if the team has never named a robot.
-pub async fn get_team_robots(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::TeamRobot>, Option<String>), Error<GetTeamRobotsError>> {
+pub async fn get_team_robots(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::TeamRobot>, Option<String>)>, Error<GetTeamRobotsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1753,8 +1843,11 @@ pub async fn get_team_robots(configuration: &configuration::Configuration, team_
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamRobotsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1763,7 +1856,7 @@ pub async fn get_team_robots(configuration: &configuration::Configuration, team_
 }
 
 /// Gets a `Team_Simple` object for the team referenced by the given key.
-pub async fn get_team_simple(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<(crate::models::TeamSimple, Option<String>), Error<GetTeamSimpleError>> {
+pub async fn get_team_simple(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<Option<(crate::models::TeamSimple, Option<String>)>, Error<GetTeamSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1799,8 +1892,11 @@ pub async fn get_team_simple(configuration: &configuration::Configuration, team_
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1809,7 +1905,7 @@ pub async fn get_team_simple(configuration: &configuration::Configuration, team_
 }
 
 /// Gets a list of Media (social media) for the given team.
-pub async fn get_team_social_media(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Media>, Option<String>), Error<GetTeamSocialMediaError>> {
+pub async fn get_team_social_media(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Media>, Option<String>)>, Error<GetTeamSocialMediaError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1845,8 +1941,11 @@ pub async fn get_team_social_media(configuration: &configuration::Configuration,
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamSocialMediaError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1855,7 +1954,7 @@ pub async fn get_team_social_media(configuration: &configuration::Configuration,
 }
 
 /// Gets a list of years in which the team participated in at least one competition.
-pub async fn get_team_years_participated(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<(Vec<i32>, Option<String>), Error<GetTeamYearsParticipatedError>> {
+pub async fn get_team_years_participated(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<i32>, Option<String>)>, Error<GetTeamYearsParticipatedError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1891,8 +1990,11 @@ pub async fn get_team_years_participated(configuration: &configuration::Configur
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamYearsParticipatedError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1901,7 +2003,7 @@ pub async fn get_team_years_participated(configuration: &configuration::Configur
 }
 
 /// Gets a list of `Team` objects, paginated in groups of 500.
-pub async fn get_teams(configuration: &configuration::Configuration, page_num: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Team>, Option<String>), Error<GetTeamsError>> {
+pub async fn get_teams(configuration: &configuration::Configuration, page_num: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Team>, Option<String>)>, Error<GetTeamsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1937,8 +2039,11 @@ pub async fn get_teams(configuration: &configuration::Configuration, page_num: i
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1947,7 +2052,7 @@ pub async fn get_teams(configuration: &configuration::Configuration, page_num: i
 }
 
 /// Gets a list of `Team` objects that competed in the given year, paginated in groups of 500.
-pub async fn get_teams_by_year(configuration: &configuration::Configuration, year: i32, page_num: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Team>, Option<String>), Error<GetTeamsByYearError>> {
+pub async fn get_teams_by_year(configuration: &configuration::Configuration, year: i32, page_num: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Team>, Option<String>)>, Error<GetTeamsByYearError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -1983,8 +2088,11 @@ pub async fn get_teams_by_year(configuration: &configuration::Configuration, yea
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamsByYearError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -1993,7 +2101,7 @@ pub async fn get_teams_by_year(configuration: &configuration::Configuration, yea
 }
 
 /// Gets a list Team Keys that competed in the given year, paginated in groups of 500.
-pub async fn get_teams_by_year_keys(configuration: &configuration::Configuration, year: i32, page_num: i32, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetTeamsByYearKeysError>> {
+pub async fn get_teams_by_year_keys(configuration: &configuration::Configuration, year: i32, page_num: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<String>, Option<String>)>, Error<GetTeamsByYearKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -2029,8 +2137,11 @@ pub async fn get_teams_by_year_keys(configuration: &configuration::Configuration
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamsByYearKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -2039,7 +2150,7 @@ pub async fn get_teams_by_year_keys(configuration: &configuration::Configuration
 }
 
 /// Gets a list of short form `Team_Simple` objects that competed in the given year, paginated in groups of 500.
-pub async fn get_teams_by_year_simple(configuration: &configuration::Configuration, year: i32, page_num: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::TeamSimple>, Option<String>), Error<GetTeamsByYearSimpleError>> {
+pub async fn get_teams_by_year_simple(configuration: &configuration::Configuration, year: i32, page_num: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::TeamSimple>, Option<String>)>, Error<GetTeamsByYearSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -2075,8 +2186,11 @@ pub async fn get_teams_by_year_simple(configuration: &configuration::Configurati
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamsByYearSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -2085,7 +2199,7 @@ pub async fn get_teams_by_year_simple(configuration: &configuration::Configurati
 }
 
 /// Gets a list of Team keys, paginated in groups of 500. (Note, each page will not have 500 teams, but will include the teams within that range of 500.)
-pub async fn get_teams_keys(configuration: &configuration::Configuration, page_num: i32, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetTeamsKeysError>> {
+pub async fn get_teams_keys(configuration: &configuration::Configuration, page_num: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<String>, Option<String>)>, Error<GetTeamsKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -2121,8 +2235,11 @@ pub async fn get_teams_keys(configuration: &configuration::Configuration, page_n
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamsKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -2131,7 +2248,7 @@ pub async fn get_teams_keys(configuration: &configuration::Configuration, page_n
 }
 
 /// Gets a list of short form `Team_Simple` objects, paginated in groups of 500.
-pub async fn get_teams_simple(configuration: &configuration::Configuration, page_num: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::TeamSimple>, Option<String>), Error<GetTeamsSimpleError>> {
+pub async fn get_teams_simple(configuration: &configuration::Configuration, page_num: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::TeamSimple>, Option<String>)>, Error<GetTeamsSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -2167,8 +2284,11 @@ pub async fn get_teams_simple(configuration: &configuration::Configuration, page
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamsSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };

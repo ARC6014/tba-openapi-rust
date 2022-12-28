@@ -97,7 +97,7 @@ pub enum GetTeamDistrictsError {
 
 
 /// Gets a list of events in the given district.
-pub async fn get_district_events(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Event>, Option<String>), Error<GetDistrictEventsError>> {
+pub async fn get_district_events(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Event>, Option<String>)>, Error<GetDistrictEventsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -133,8 +133,11 @@ pub async fn get_district_events(configuration: &configuration::Configuration, d
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictEventsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -143,7 +146,7 @@ pub async fn get_district_events(configuration: &configuration::Configuration, d
 }
 
 /// Gets a list of event keys for events in the given district.
-pub async fn get_district_events_keys(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetDistrictEventsKeysError>> {
+pub async fn get_district_events_keys(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<String>, Option<String>)>, Error<GetDistrictEventsKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -179,8 +182,11 @@ pub async fn get_district_events_keys(configuration: &configuration::Configurati
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictEventsKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -189,7 +195,7 @@ pub async fn get_district_events_keys(configuration: &configuration::Configurati
 }
 
 /// Gets a short-form list of events in the given district.
-pub async fn get_district_events_simple(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::EventSimple>, Option<String>), Error<GetDistrictEventsSimpleError>> {
+pub async fn get_district_events_simple(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::EventSimple>, Option<String>)>, Error<GetDistrictEventsSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -225,8 +231,11 @@ pub async fn get_district_events_simple(configuration: &configuration::Configura
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictEventsSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -235,7 +244,7 @@ pub async fn get_district_events_simple(configuration: &configuration::Configura
 }
 
 /// Gets a list of team district rankings for the given district.
-pub async fn get_district_rankings(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::DistrictRanking>, Option<String>), Error<GetDistrictRankingsError>> {
+pub async fn get_district_rankings(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::DistrictRanking>, Option<String>)>, Error<GetDistrictRankingsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -271,8 +280,11 @@ pub async fn get_district_rankings(configuration: &configuration::Configuration,
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictRankingsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -281,7 +293,7 @@ pub async fn get_district_rankings(configuration: &configuration::Configuration,
 }
 
 /// Gets a list of `Team` objects that competed in events in the given district.
-pub async fn get_district_teams(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::Team>, Option<String>), Error<GetDistrictTeamsError>> {
+pub async fn get_district_teams(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::Team>, Option<String>)>, Error<GetDistrictTeamsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -317,8 +329,11 @@ pub async fn get_district_teams(configuration: &configuration::Configuration, di
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictTeamsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -327,7 +342,7 @@ pub async fn get_district_teams(configuration: &configuration::Configuration, di
 }
 
 /// Gets a list of `Team` objects that competed in events in the given district.
-pub async fn get_district_teams_keys(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<(Vec<String>, Option<String>), Error<GetDistrictTeamsKeysError>> {
+pub async fn get_district_teams_keys(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<String>, Option<String>)>, Error<GetDistrictTeamsKeysError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -363,8 +378,11 @@ pub async fn get_district_teams_keys(configuration: &configuration::Configuratio
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictTeamsKeysError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -373,7 +391,7 @@ pub async fn get_district_teams_keys(configuration: &configuration::Configuratio
 }
 
 /// Gets a short-form list of `Team` objects that competed in events in the given district.
-pub async fn get_district_teams_simple(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::TeamSimple>, Option<String>), Error<GetDistrictTeamsSimpleError>> {
+pub async fn get_district_teams_simple(configuration: &configuration::Configuration, district_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::TeamSimple>, Option<String>)>, Error<GetDistrictTeamsSimpleError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -409,8 +427,11 @@ pub async fn get_district_teams_simple(configuration: &configuration::Configurat
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictTeamsSimpleError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -419,7 +440,7 @@ pub async fn get_district_teams_simple(configuration: &configuration::Configurat
 }
 
 /// Gets a list of districts and their corresponding district key, for the given year.
-pub async fn get_districts_by_year(configuration: &configuration::Configuration, year: i32, if_none_match: Option<&str>) -> Result<(Vec<crate::models::DistrictList>, Option<String>), Error<GetDistrictsByYearError>> {
+pub async fn get_districts_by_year(configuration: &configuration::Configuration, year: i32, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::DistrictList>, Option<String>)>, Error<GetDistrictsByYearError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -455,8 +476,11 @@ pub async fn get_districts_by_year(configuration: &configuration::Configuration,
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetDistrictsByYearError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -465,7 +489,7 @@ pub async fn get_districts_by_year(configuration: &configuration::Configuration,
 }
 
 /// Gets a list of team rankings for the Event.
-pub async fn get_event_district_points(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<(crate::models::EventDistrictPoints, Option<String>), Error<GetEventDistrictPointsError>> {
+pub async fn get_event_district_points(configuration: &configuration::Configuration, event_key: &str, if_none_match: Option<&str>) -> Result<Option<(crate::models::EventDistrictPoints, Option<String>)>, Error<GetEventDistrictPointsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -501,8 +525,11 @@ pub async fn get_event_district_points(configuration: &configuration::Configurat
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetEventDistrictPointsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
@@ -511,7 +538,7 @@ pub async fn get_event_district_points(configuration: &configuration::Configurat
 }
 
 /// Gets an array of districts representing each year the team was in a district. Will return an empty array if the team was never in a district.
-pub async fn get_team_districts(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<(Vec<crate::models::DistrictList>, Option<String>), Error<GetTeamDistrictsError>> {
+pub async fn get_team_districts(configuration: &configuration::Configuration, team_key: &str, if_none_match: Option<&str>) -> Result<Option<(Vec<crate::models::DistrictList>, Option<String>)>, Error<GetTeamDistrictsError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -547,8 +574,11 @@ pub async fn get_team_districts(configuration: &configuration::Configuration, te
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetTeamDistrictsError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };

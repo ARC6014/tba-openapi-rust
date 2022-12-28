@@ -25,7 +25,7 @@ pub enum GetStatusError {
 
 
 /// Returns API status, and TBA status information.
-pub async fn get_status(configuration: &configuration::Configuration, if_none_match: Option<&str>) -> Result<(crate::models::ApiStatus, Option<String>), Error<GetStatusError>> {
+pub async fn get_status(configuration: &configuration::Configuration, if_none_match: Option<&str>) -> Result<Option<(crate::models::ApiStatus, Option<String>)>, Error<GetStatusError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -61,8 +61,11 @@ pub async fn get_status(configuration: &configuration::Configuration, if_none_ma
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        if local_var_status.as_u16() == 304 {
+            return Ok(None)
+        }
         let local_var_entity = serde_json::from_str(&local_var_content).map_err(Error::from)?;
-        Ok((local_var_entity, etag))
+        Ok(Some((local_var_entity, etag)))
     } else {
         let local_var_entity: Option<GetStatusError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
